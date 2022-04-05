@@ -1,3 +1,4 @@
+#First install all the package in python
 pip3 install CMake
 pip3 install mediapipe
 pip install opencv-python
