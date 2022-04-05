@@ -1,0 +1,5 @@
+pip3 install CMake
+pip3 install mediapipe
+pip install opencv-python
+pip install firebase-admin
+pip3 install face-recognition
