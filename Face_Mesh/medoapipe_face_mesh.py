@@ -7,7 +7,9 @@ class FaceMesh:
     def __init__(self) -> None:
         self.mp_face_mesh = mp.solutions.mediapipe.python.solutions.face_mesh
         self.face_mesh = self.mp_face_mesh.FaceMesh(max_num_faces=10,static_image_mode=True)
-        self.mp_drawing = mp.solutions.mediapipe.python.solutions.drawing_utils
+        self.mp_drawing = mp.solutions.drawing_utils
+        self.mp_drawing_styles = mp.solutions.mediapipe.python.solutions.drawing_styles
+
         # self.mp_drawing_sty   les = mp.solutions.drawing_styles
 
             
@@ -19,10 +21,68 @@ class FaceMesh:
         drawing_spec = self.mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
         face_mesh_result = self.face_mesh.process(image)
+        # print(face_mesh_result.multi_face_landmarks)
+        if face_mesh_result.multi_face_landmarks:
+            for face_landmarks in face_mesh_result.multi_face_landmarks:
+                # self.mp_drawing.draw_landmarks(image=image, 
+                #                                 landmark_list=face_landmarks, 
+                #                                 connections=self.mp_face_mesh.FACEMESH_TESSELATION,
+                #                                 landmark_drawing_spec=None,
+                #                                 connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_tesselation_style()
+                                                # )
+
+                self.mp_drawing.draw_landmarks(image=image, 
+                                                landmark_list=face_landmarks, 
+                                                connections=self.mp_face_mesh.FACEMESH_FACE_OVAL,
+                                                landmark_drawing_spec=None,
+                                                connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_contours_style()
+                                                )
+                # --------------------  Left and Right Eyebrow ------------------
+                self.mp_drawing.draw_landmarks(image=image, 
+                                                landmark_list=face_landmarks, 
+                                                connections=self.mp_face_mesh.FACEMESH_LEFT_EYEBROW,
+                                                landmark_drawing_spec=None,
+                                                connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_contours_style()
+                                                )
+                self.mp_drawing.draw_landmarks(image=image, 
+                                                landmark_list=face_landmarks, 
+                                                connections=self.mp_face_mesh.FACEMESH_RIGHT_EYEBROW,
+                                                landmark_drawing_spec=None,
+                                                connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_contours_style()
+                                                )
+
+                # --------------------  Left and Right Eyebrow ------------------
+                self.mp_drawing.draw_landmarks(image=image, 
+                                                landmark_list=face_landmarks, 
+                                                connections=self.mp_face_mesh.FACEMESH_LEFT_EYE,
+                                                landmark_drawing_spec=None,
+                                                connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_contours_style()
+                                                )
+                self.mp_drawing.draw_landmarks(image=image, 
+                                                landmark_list=face_landmarks, 
+                                                connections=self.mp_face_mesh.FACEMESH_RIGHT_EYE,
+                                                landmark_drawing_spec=None,
+                                                connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_contours_style()
+                                                )
+                # # --------------------  Left and Right Eyebrow ------------------
+                # self.mp_drawing.draw_landmarks(image=image, 
+                #                                 landmark_list=face_landmarks, 
+                #                                 connections=self.mp_face_mesh.FACEMESH_IRISES,
+                #                                 landmark_drawing_spec=None,
+                #                                 # connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_contours_style()
+                #                                 )
+                self.mp_drawing.draw_landmarks(image=image,
+                                            landmark_list=face_landmarks,
+                                            connections=self.mp_face_mesh.FACEMESH_LIPS,
+                                            landmark_drawing_spec=None,
+                                            # connection_drawing_spec=self.mp_drawing_styles
+                                            # .get_default_face_mesh_iris_connections_style()
+                                            )
 
         frame_height = image.shape[0]
         frame_width = image.shape[1]
         face_meshs_custom_landmarks=[]
+        
 
         # if face_mesh_result.multi_face_landmarks:
         #     for face_landmarks in face_mesh_result.multi_face_landmarks:
@@ -96,5 +156,21 @@ class FaceMesh:
                     
 
 
-        
+if __name__ =="__main__":
+    cap = cv2.VideoCapture(0)
+    FaceMesh = FaceMesh()
+    while(True):
+            success, frame = cap.read()
+            if success != True:
+                print("Video has ended")
+                break
+
+            frameRGB = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+            FaceMesh.faceMeshDetection(frameRGB)
+            frame = cv2.cvtColor(frameRGB,cv2.COLOR_BGR2RGB)
+            cv2.imshow("frame", frame)
+            cv2.waitKey(1)
+    cv2.destroyAllWindows()
+    cap.release()
+    print("hello ")
         
